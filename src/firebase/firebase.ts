@@ -14,6 +14,7 @@ import {
   addDoc,
   QueryDocumentSnapshot,
   DocumentData,
+  Query,
   // addDoc,
   // getDoc,
   // where,
@@ -36,7 +37,7 @@ const firebaseConfig = {
 // Initialize Firebase
 export const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
-const collectionRef = collection(db, 'medicalHistory');
+export const collectionRef = collection(db, 'medicalHistory');
 // const storage = getStorage(app);
 
 
@@ -49,9 +50,9 @@ export const registerNewMedicalRecord = async ( newMedicalRecord:MedicalModel ) 
   }
 }
 
-export const getMedicalRecords = async () => {
+export const getMedicalRecords = async ( q:Query<DocumentData> ) => {
   try {
-    const querySnapshot = await getDocs(collectionRef);
+    const querySnapshot = await getDocs(q);
     return querySnapshot.docs.map(
       (doc: QueryDocumentSnapshot<DocumentData>) => ({
         id: doc.id,

@@ -6,12 +6,13 @@ import { MedicalModel } from '../interfaces/medical.model';
 import { Container } from './shared/Container';
 
 export const CustomCard = styled(Card)(() => ({
-  width: 500,
   marginLeft: 20,
+  width: 600,
   '@media screen and (max-width: 1200px)': {
     marginLeft: 0,
-    marginTop: 20,
-    width: '100%',
+    marginTop: 10,
+    padding: 20,
+    width: 'auto'
   },
 }));
 
@@ -20,7 +21,7 @@ export const MedicalForm = () => {
     name: '',
     doctorName: '',
     sex: 'Mujer',
-    age: '',
+    age: 0,
     description: '',
   });
 
@@ -34,7 +35,7 @@ export const MedicalForm = () => {
 
   return (
     <CustomCard
-      sx={{ boxShadow: 4 }}
+      sx={{ boxShadow: 4}}
     >
       <form
         onSubmit={ handleSubmit }

@@ -6,7 +6,7 @@ import { Box } from "@mui/system";
 export const RowContainer = styled('div')(() => ({
   display: 'flex',
   margin: '0 20px',
-  '@media screen and (max-width: 1200px)': {
+  '@media screen and (max-width: 900px)': {
     flexDirection: 'column'
   },
 }));
