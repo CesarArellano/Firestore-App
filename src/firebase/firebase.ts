@@ -1,23 +1,26 @@
 // Import the functions you need from the SDKs you need
 import { initializeApp } from "firebase/app";
-import {
-  getStorage,
-  ref,
-  uploadBytes,
-  getDownloadURL,
-  getBytes 
-} from 'firebase/storage';
+// import {
+//   getStorage,
+//   ref,
+//   uploadBytes,
+//   getDownloadURL,
+//   getBytes 
+// } from 'firebase/storage';
 import {
   getFirestore,
   collection,
-  addDoc,
   getDocs,
-  doc,
-  getDoc,
-  where,
-  setDoc,
-  deleteDoc
+  addDoc,
+  QueryDocumentSnapshot,
+  DocumentData,
+  // addDoc,
+  // getDoc,
+  // where,
+  // deleteDoc
 } from 'firebase/firestore';
+import { MedicalModel } from '../interfaces/medical.model';
+import Swal from "sweetalert2";
 
 
 const firebaseConfig = {
@@ -33,14 +36,30 @@ const firebaseConfig = {
 // Initialize Firebase
 export const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
-const storage = getStorage(app);
+const collectionRef = collection(db, 'medicalHistory');
+// const storage = getStorage(app);
 
-export const registerNewMedicalRecord = async ( newMedicalRecord:any ) => {
+
+export const registerNewMedicalRecord = async ( newMedicalRecord:MedicalModel ) => {
   try {
-    const collectionRef = collection(db, 'medicalHistory');
-    const docRef = doc(collectionRef);
-    await setDoc(docRef, newMedicalRecord);
+    addDoc( collectionRef, newMedicalRecord);
+    Swal.fire('¡Buen trabajo!', 'El historial médico se registro con éxito', 'success');
   } catch (error) {
-    
+    Swal.fire('¡Upps!', 'Algo salió mal', 'error');
+  }
+}
+
+export const getMedicalRecords = async () => {
+  try {
+    const querySnapshot = await getDocs(collectionRef);
+    return querySnapshot.docs.map(
+      (doc: QueryDocumentSnapshot<DocumentData>) => ({
+        id: doc.id,
+        ...doc.data()
+      }) as MedicalModel
+    );
+  } catch (error) {
+    Swal.fire('¡Upps!', 'Algo salió mal', 'error');
+    return [];
   }
 }
