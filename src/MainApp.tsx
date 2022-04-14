@@ -1,7 +1,6 @@
-import { AppBar, Divider, styled, Toolbar, Typography } from "@mui/material";
+import { Box, AppBar, Divider, styled, Toolbar, Typography } from "@mui/material";
 import { MedicalTable } from "./components/MedicalTable";
 import { MedicalForm } from "./components/MedicalForm";
-import { Box } from "@mui/system";
 
 export const RowContainer = styled('div')(() => ({
   display: 'flex',
