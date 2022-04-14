@@ -1,4 +1,5 @@
-import { Box, Button, Card, InputLabel, MenuItem, Select, SelectChangeEvent, styled, TextField, Typography } from '@mui/material';
+import Swal from 'sweetalert2';
+import { Box, Button, Card, FormControl, InputLabel, MenuItem, Select, SelectChangeEvent, styled, TextField, Typography } from '@mui/material';
 import { ChangeEvent, SyntheticEvent } from 'react'
 import { registerNewMedicalRecord } from '../firebase/firebase';
 import { useForm } from '../hooks/useForm';
@@ -31,6 +32,11 @@ export const MedicalForm = () => {
 
   const handleSubmit = async ( e:SyntheticEvent ) => {
     e.preventDefault();
+    
+    if( !genres.includes(sex) ) {
+      return Swal.fire('¡Upps!', 'Seleccione un género', 'error');
+    }
+
     registerNewMedicalRecord({
       name,
       doctorName,
@@ -38,12 +44,13 @@ export const MedicalForm = () => {
       age: parseInt(age as string),
       description,
     });
+    
     reset();
   }
 
   return (
     <CustomCard
-      sx={{ boxShadow: 4}}
+      sx={{ boxShadow: 4 }}
     >
       <form
         onSubmit={ handleSubmit }
@@ -63,7 +70,7 @@ export const MedicalForm = () => {
           <TextField
             value={ name }
             type="text"
-            label="Escribe el nombre"
+            label="Escribe el nombre del paciente"
             variant='filled'
             onChange={ ({ target }: ChangeEvent<HTMLInputElement> ) => handleInputChange(target.value, 'name') }
             required
@@ -78,23 +85,20 @@ export const MedicalForm = () => {
             required
           />
           <Box sx={{ height: 20 }} />
-          <InputLabel>Seleccione el género</InputLabel>
-          <Select
-            value={ sex as any }
-            variant='filled'
-            onChange={ ( { target }: SelectChangeEvent<HTMLInputElement>  ) => handleInputChange(target.value as string, 'sex') }
-          > 
-            {
-              genres.map((genre) => (
-                <MenuItem
-                  key={ genre }
-                  value={ genre }
-                >
-                  { genre }
-                </MenuItem>
-              ))
-            }
-          </Select>
+          <FormControl variant="filled">
+            <InputLabel id="demo-simple-select-filled">Seleccione el género</InputLabel>
+            <Select
+              labelId="demo-simple-select-filled-label"
+              id="demo-simple-select-filled"
+              value={ sex as any }
+              label="Seleccione el género"
+              variant='filled'
+              onChange={ ( { target }: SelectChangeEvent<HTMLInputElement>  ) => handleInputChange(target.value as string, 'sex') }
+            > 
+              <MenuItem value="Hombre">Hombre</MenuItem>
+              <MenuItem value="Mujer">Mujer</MenuItem>
+            </Select>
+          </FormControl>
           <Box sx={{ height: 20 }} />
           <TextField
             multiline

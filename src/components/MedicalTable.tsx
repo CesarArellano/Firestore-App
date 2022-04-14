@@ -1,51 +1,62 @@
 import { ChangeEvent, useEffect, useState } from 'react'
-import { Box, Button, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, TextField } from '@mui/material';
-import { query, where } from 'firebase/firestore';
+import { Box, Button, Paper, styled, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, TextField } from '@mui/material';
+import SearchIcon from '@mui/icons-material/Search';
+import { onSnapshot, query, where } from 'firebase/firestore';
 import { collectionRef, getMedicalRecords } from '../firebase/firebase';
 import { MedicalModel } from '../interfaces/medical.model';
 import { RowContainer } from '../MainApp';
 import { useForm } from '../hooks/useForm';
 import { CircularProgressIndicator } from './shared/CircularProgressIndicator';
 import { NoDataText } from './shared/NoDataText';
+import Swal from 'sweetalert2';
+
+export const FullContainer = styled('div')(() => ({
+  width: '100%'
+}));
 
 export const MedicalTable = () => {
   const { values, handleInputChange } = useForm({
-    age: '0'
+    age: ''
   })
 
   const [ isLoading, setIsLoading ] = useState(false);
   const [ medicalList, setMedicalList ] = useState<MedicalModel[]>([]);
 
+  const { age } = values;
+
   const handleSearch = async () => {
+    if( !age.match(/^[0-9]+$/) ){
+      return Swal.fire('Upps', 'Atención, inserte sólo dígitos', 'error');
+    }
     setIsLoading( true );
-    setMedicalList( await getMedicalRecords(query(collectionRef, where("age", ">=", parseInt(values.age) )) ) );
+    setMedicalList( await getMedicalRecords(query(collectionRef, where("age", ">=", parseInt(age ?? 0) )) ) );
     setIsLoading( false );
   }
 
   useEffect(() =>{
-    const getMedicalHistory = async () => {
-      setIsLoading( true );
-      setMedicalList( await getMedicalRecords( collectionRef ) );
-      setIsLoading( false );
-    }
-    
-    getMedicalHistory()
+    onSnapshot(collectionRef, (snapshot) => {
+      setMedicalList( snapshot.docs.map((doc) => ({
+        id: doc.id,
+        ...doc.data()
+      }) as MedicalModel
+      ))
+    });
   }, [])
 
   return (
-    <div
-      style={{ width: '100%' }}
-    >
+    <FullContainer>
       <RowContainer
-        style={{ margin: 0, justifyContent: 'space-between' }}
+        style={{ margin: 0 }}
       >
-        <TextField 
-          label="Filtra por edad"
+        <TextField
+          fullWidth
+          label="Buscar por edad mínima"
+          value={ age }
           variant="filled"
           onChange={({target}: ChangeEvent<HTMLInputElement>) => handleInputChange(target.value, 'age')}
         />
         <Box sx={{ height: 10 }}/>
-        <Button variant="contained" onClick={ handleSearch }> Buscar </Button>
+        <Button variant="contained" endIcon={ <SearchIcon /> } onClick={ handleSearch } > Buscar </Button>
       </RowContainer>
       <Box sx={{ height: 15 }}/>
         {
@@ -68,6 +79,7 @@ export const MedicalTable = () => {
                   <TableBody>
                     {medicalList.map((row) => (
                       <TableRow
+                        hover
                         key={row.id}
                         sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
                       >
@@ -85,6 +97,6 @@ export const MedicalTable = () => {
               </TableContainer>
             )
         }
-    </div>
+    </FullContainer>
   )
 }

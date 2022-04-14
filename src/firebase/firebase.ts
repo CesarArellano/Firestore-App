@@ -8,6 +8,7 @@ import {
   QueryDocumentSnapshot,
   DocumentData,
   Query,
+  onSnapshot,
 } from 'firebase/firestore';
 import { MedicalModel } from '../interfaces/medical.model';
 import Swal from "sweetalert2";
