@@ -1,12 +1,5 @@
 // Import the functions you need from the SDKs you need
 import { initializeApp } from "firebase/app";
-// import {
-//   getStorage,
-//   ref,
-//   uploadBytes,
-//   getDownloadURL,
-//   getBytes 
-// } from 'firebase/storage';
 import {
   getFirestore,
   collection,
@@ -15,10 +8,6 @@ import {
   QueryDocumentSnapshot,
   DocumentData,
   Query,
-  // addDoc,
-  // getDoc,
-  // where,
-  // deleteDoc
 } from 'firebase/firestore';
 import { MedicalModel } from '../interfaces/medical.model';
 import Swal from "sweetalert2";
@@ -38,7 +27,6 @@ const firebaseConfig = {
 export const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 export const collectionRef = collection(db, 'medicalHistory');
-// const storage = getStorage(app);
 
 
 export const registerNewMedicalRecord = async ( newMedicalRecord:MedicalModel ) => {
