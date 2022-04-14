@@ -1,62 +1,58 @@
-import { Button, CircularProgress, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, TextField, Typography } from '@mui/material';
-import { Box } from '@mui/system';
-import { query, where } from 'firebase/firestore';
 import { ChangeEvent, useEffect, useState } from 'react'
+import { Box, Button, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, TextField } from '@mui/material';
+import { query, where } from 'firebase/firestore';
 import { collectionRef, getMedicalRecords } from '../firebase/firebase';
 import { MedicalModel } from '../interfaces/medical.model';
 import { RowContainer } from '../MainApp';
-import { CenterContainer, Container } from './shared/Container';
 import { useForm } from '../hooks/useForm';
+import { CircularProgressIndicator } from './shared/CircularProgressIndicator';
+import { NoDataText } from './shared/NoDataText';
 
 export const MedicalTable = () => {
   const { values, handleInputChange } = useForm({
     age: '0'
   })
+
   const [ isLoading, setIsLoading ] = useState(false);
   const [ medicalList, setMedicalList ] = useState<MedicalModel[]>([]);
-  
-  const getMedicalHistory = async () => {
+
+  const handleSearch = async () => {
     setIsLoading( true );
-    setMedicalList( await getMedicalRecords(query(collectionRef, where("age", ">=", values.age )) ) );
+    setMedicalList( await getMedicalRecords(query(collectionRef, where("age", ">=", parseInt(values.age) )) ) );
     setIsLoading( false );
   }
 
-  const handleSearch = () => {
-    getMedicalHistory();
-  }
-
   useEffect(() =>{
+    const getMedicalHistory = async () => {
+      setIsLoading( true );
+      setMedicalList( await getMedicalRecords( collectionRef ) );
+      setIsLoading( false );
+    }
+    
     getMedicalHistory()
-  }, [ ])
+  }, [])
 
   return (
     <div
-      style={{ width: 'auto' }}
+      style={{ width: '100%' }}
     >
       <RowContainer
         style={{ margin: 0, justifyContent: 'space-between' }}
       >
         <TextField 
           label="Filtra por edad"
-          variant="filled" 
+          variant="filled"
           onChange={({target}: ChangeEvent<HTMLInputElement>) => handleInputChange(target.value, 'age')}
         />
+        <Box sx={{ height: 10 }}/>
         <Button variant="contained" onClick={ handleSearch }> Buscar </Button>
-        </RowContainer>
-        <Box sx={{ height: 15 }}/>
+      </RowContainer>
+      <Box sx={{ height: 15 }}/>
         {
           ( isLoading )
-          ? (
-            <CenterContainer >
-              <CircularProgress />
-            </CenterContainer>
-          )
+          ? <CircularProgressIndicator />
           : ( medicalList.length === 0 )
-            ? (
-              <CenterContainer >
-                <Typography>Sin información disponible</Typography>
-              </CenterContainer>
-            )
+            ? <NoDataText />
             : (
               <TableContainer component={Paper} sx={{ boxShadow: 4 }}>
                 <Table sx={{ minWidth: '50%'}} aria-label="simple table">

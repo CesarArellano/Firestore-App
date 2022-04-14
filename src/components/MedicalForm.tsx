@@ -8,7 +8,7 @@ import { Container } from './shared/Container';
 export const CustomCard = styled(Card)(() => ({
   marginLeft: 20,
   width: 600,
-  '@media screen and (max-width: 1200px)': {
+  '@media screen and (max-width: 900px)': {
     marginLeft: 0,
     marginTop: 10,
     padding: 20,
@@ -20,16 +20,24 @@ export const MedicalForm = () => {
   const { values, handleInputChange, reset } = useForm<MedicalModel>({
     name: '',
     doctorName: '',
-    sex: 'Mujer',
-    age: 0,
+    sex: '',
+    age: '',
     description: '',
   });
 
-  const { name, description, doctorName, age } = values;
+  const { name, description, doctorName, age, sex } = values;
+
+  const genres = ['Hombre', 'Mujer'];
 
   const handleSubmit = async ( e:SyntheticEvent ) => {
     e.preventDefault();
-    registerNewMedicalRecord(values);
+    registerNewMedicalRecord({
+      name,
+      doctorName,
+      sex,
+      age: parseInt(age as string),
+      description,
+    });
     reset();
   }
 
@@ -72,11 +80,20 @@ export const MedicalForm = () => {
           <Box sx={{ height: 20 }} />
           <InputLabel>Seleccione el género</InputLabel>
           <Select
+            value={ sex as any }
             variant='filled'
             onChange={ ( { target }: SelectChangeEvent<HTMLInputElement>  ) => handleInputChange(target.value as string, 'sex') }
-          >
-            <MenuItem value={'Hombre'}>Hombre</MenuItem>
-            <MenuItem value={'Mujer'}>Mujer</MenuItem>
+          > 
+            {
+              genres.map((genre) => (
+                <MenuItem
+                  key={ genre }
+                  value={ genre }
+                >
+                  { genre }
+                </MenuItem>
+              ))
+            }
           </Select>
           <Box sx={{ height: 20 }} />
           <TextField
